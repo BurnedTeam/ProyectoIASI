@@ -1,12 +1,20 @@
-
 from estado import Estado
+#Importar la biblioteca heapq para la implementación de la cola de prioridad
+import queue
 
 #Posicion de la meta
 global metax
 global metay
+global totalMonedas
 
 #Vector de estados del que sacaremos la solucion con Estado.movimiento
 solucion=[]
+
+#Cola de estados por los que podemos seguir avanzando
+abiertos=queue.PriorityQueue()
+
+#Vecator de estados de los que ya hemos desarrollado sus hijos
+cerrados=[]
 
 def lectura_fichero(nom_fichero):
     # Abrir el archivo con nombre especificado en el parámetro "nom_fichero" en modo lectura ('r')
@@ -21,8 +29,7 @@ def lectura_fichero(nom_fichero):
             linea = []
             # Procesar cada valor en la línea actual y agregarlo a la lista "linea" como un entero
             for value in line.strip().split(','):
-                try: 
-                    
+                try:                     
                     linea.append(int(value))
                 except ValueError:
                     # Si el valor no puede ser convertido a entero, se omite
@@ -33,6 +40,9 @@ def lectura_fichero(nom_fichero):
         #Cierre del fichero
         fichero.close()
         # Retornar los valores de "n" y "laberinto"
+        global totalMonedas
+        totalMonedas=n
+
         return n, laberinto
 
 
@@ -105,9 +115,62 @@ def localizarmeta(laberinto):
                 metay=fila
                 metax=columna
             columna=columna+1            
-        fila=fila+1   
+        fila=fila+1 
+        
+def ordenarAbiertos(): 
+    n=len(abiertos)
+    
+    for i in range(n-1):
+        for j in range(n-1-i):
+            if abiertos[j].getHeuristica(totalMonedas, metax, metay) + abiertos[j].totalMovs > abiertos[j+1].getHeuristica(totalMonedas, metax, metay) + abiertos[j+1].totalMovs:
+                abiertos[j], abiertos[j+1]=abiertos[j+1], abiertos[j]
 
+def movimiento(node, parent):
+    if node.x < parent.x:
+        return 'Iquierda'
+    elif node.x > parent.x:
+        return 'Derecha'
+    elif node.y < parent.y:
+        return 'Arriba'
+    elif node.y > parent.y:
+        return 'Abajo'
+    elif node.x < parent.x and node.y < parent.y:
+        return 'Izquierda Arriba'
+    elif node.x < parent.x and node.y > parent.y:
+        return 'Izquierda Abajo'
+    elif node.x > parent.x and node.y < parent.y:
+        return 'Derecha Arriba'
+    elif node.x > parent.x and node.y > parent.y:
+        return 'Derecha Abajo'
 
+def expansionesDeEstado(padre):
+    hijos= []
+    aux=padre
+    for x in padre.laberinto[x-1:x+1]:
+        for y in padre.laberinto[y-1:y+1]:
+            if(padre.laberinto[x,y] not in (8,9) and padre.laberinto not in cerrados):
+                aux.x=x
+                aux.y=y
+                aux.estadoPadre=padre
+                aux.movimientoRealizado=movimiento(aux, padre)
+                hijos.add(aux.laberinto)
+    return hijos  
+              
+def expandir():
+    global metax
+    global metay
+    global totalMonedas
+    while abiertos:
+        
+        estadoact=abiertos.get()[1]
+        cerrados.add(estadoact)
+        if estadoact.x == metax and estadoact.y == metay and estadoact.coin == totalMonedas:
+            #ir yendo a estado padre hasta llegar al principio para ver los movientos que se han hecho
+            return solucion
+        hijos = expansionesDeEstado(estadoact)
+        for hijo in hijos:
+            if hijo not in abiertos:
+                    abiertos.put(hijo.getHeuristica(totalMonedas,metax,metay), hijo)
 
 
 def main():
@@ -127,10 +190,20 @@ def main():
             else :
                 print("💲",end="") 
         print() 
-
+    
+    localizarmeta(laberinto)
+    x, y=locateBot()
+    EstadoBase= Estado(x, y, 0, laberinto, "", 0, Estado())
+    #añadir a la cola 
+    abiertos.put(EstadoBase.getHeuristica(totalMonedas,metax,metay),EstadoBase)
+    
 if __name__ == '__main__':
     main()
 
 #Usar un vector para guardar los estados en los que hemos ido pasando y cuando lleguemos al objetivo el vector sera la solucion
 #Escalada simple: en cuanto encuntre un estado mejor pasa a ese estado y si llega a un punto que no hay estados mejores vuelve uno atras (se relaja)
 #Maxima pendiente: va mirando posibles estados y nos quedamos con el que este mas cerca de la salida. Si no hay mejores hace lo mismo que en escalada simple
+
+#Colas
+#nombre.put(heuristica, estado)
+#nombre.get()[1]

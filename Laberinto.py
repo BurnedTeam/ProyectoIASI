@@ -153,6 +153,7 @@ def expansionesDeEstado(padre):
                 aux.y=y
                 aux.estadoPadre=padre
                 aux.movimientoRealizado=movimiento(aux, padre)
+                aux.totalMovs=aux.totalMovs + padre.totalMovs;
                 hijos.add(aux.laberinto)
     return hijos  
               

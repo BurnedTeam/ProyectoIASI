@@ -1,6 +1,7 @@
 from estado import Estado
 #Importar la biblioteca heapq para la implementación de la cola de prioridad
 import queue
+    
 
 #Posicion de la meta
 global metax
@@ -100,8 +101,8 @@ def locateBot(laberinto):
     for i, linea in enumerate(laberinto):
         for j, valor in enumerate(linea):
             if valor == 8:
-                return i, j, len(linea)
-    return -1,-1,-1
+                return i, j
+    return -1,-1
 
 #Localizar la posicion de la meta   
 def localizarmeta(laberinto):    
@@ -117,24 +118,16 @@ def localizarmeta(laberinto):
             columna=columna+1            
         fila=fila+1 
         
-def ordenarAbiertos(): 
-    n=len(abiertos)
+# def ordenarAbiertos(): 
+#     n=len(abiertos)
     
-    for i in range(n-1):
-        for j in range(n-1-i):
-            if abiertos[j].getHeuristica(totalMonedas, metax, metay) + abiertos[j].totalMovs > abiertos[j+1].getHeuristica(totalMonedas, metax, metay) + abiertos[j+1].totalMovs:
-                abiertos[j], abiertos[j+1]=abiertos[j+1], abiertos[j]
+#     for i in range(n-1):
+#         for j in range(n-1-i):
+#             if abiertos[j].getHeuristica(totalMonedas, metax, metay) + abiertos[j].totalMovs > abiertos[j+1].getHeuristica(totalMonedas, metax, metay) + abiertos[j+1].totalMovs:
+#                 abiertos[j], abiertos[j+1]=abiertos[j+1], abiertos[j]
 
 def movimiento(node, parent):
-    if node.x < parent.x:
-        return 'Iquierda'
-    elif node.x > parent.x:
-        return 'Derecha'
-    elif node.y < parent.y:
-        return 'Arriba'
-    elif node.y > parent.y:
-        return 'Abajo'
-    elif node.x < parent.x and node.y < parent.y:
+    if node.x < parent.x and node.y < parent.y:
         return 'Izquierda Arriba'
     elif node.x < parent.x and node.y > parent.y:
         return 'Izquierda Abajo'
@@ -142,42 +135,56 @@ def movimiento(node, parent):
         return 'Derecha Arriba'
     elif node.x > parent.x and node.y > parent.y:
         return 'Derecha Abajo'
+    elif node.x < parent.x:
+        return 'Iquierda'
+    elif node.x > parent.x:
+        return 'Derecha'
+    elif node.y < parent.y:
+        return 'Arriba'
+    elif node.y > parent.y:
+        return 'Abajo'
 
 def expansionesDeEstado(padre):
     hijos= []
     aux=padre
-    for x in padre.laberinto[x-1:x+1]:
-        for y in padre.laberinto[y-1:y+1]:
-            if(padre.laberinto[x,y] not in (8,9) and padre.laberinto not in cerrados):
+    x= padre.x
+    y=padre.y
+    for x in range(padre.x-1 , padre.x+2):
+        for y in range(padre.y-1 , padre.y+2):
+    #for x in padre.tablero[x-1:x+1]:
+        #for y in padre.tablero[y-1:y+1]:
+            if padre.tablero[x][y] not in (8,9) and padre not in cerrados:
                 aux.x=x
                 aux.y=y
                 aux.estadoPadre=padre
                 aux.movimientoRealizado=movimiento(aux, padre)
-                aux.totalMovs=1 + padre.totalMovs;
+                aux.totalMovs=1 + padre.totalMovs
                 hijos.add(aux.laberinto)
     return hijos  
-              
+                
 def expandir():
     global metax
     global metay
     global totalMonedas
     while abiertos:
-        
-        estadoact=abiertos.get()[1]
-        cerrados.add(estadoact)
-        if estadoact.x == metax and estadoact.y == metay and estadoact.coin == totalMonedas:
-            #ir yendo a estado padre hasta llegar al principio para ver los movientos que se han hecho
+        estadoact=abiertos.get()
+        cerrados.append(estadoact)
+        #print(estadoact.x,estadoact.y)
+        if estadoact.x == metax and estadoact.y == metay and estadoact.coin >= totalMonedas:
+            while estadoact.estadoPadre :
+                solucion.append(estadoact.estadoPadre)
             return solucion
         hijos = expansionesDeEstado(estadoact)
         for hijo in hijos:
             if hijo not in abiertos:
-                    abiertos.put(hijo.getHeuristica(totalMonedas,metax,metay), hijo)
+                abiertos.put(hijo, hijo.getHeuristica(totalMonedas,metax,metay)+hijo.movimientoRealizado)
 
-
-def main():
-    n, laberinto = lectura_fichero("LABECOIN1.txt")
-    print("n:", n)
-    print("laberinto:")
+def mostrarsolucion():
+    while solucion:
+        print (solucion.pop())
+    
+def printLaberinto(laberinto):
+    print()
     for linea in laberinto:
         for valor in linea:
             if valor==0:
@@ -192,11 +199,21 @@ def main():
                 print("💲",end="") 
         print() 
     
+def main():
+    n, laberinto = lectura_fichero("LABECOIN1.txt")
+    print("n:", n)
+    print("laberinto a resolver:")
+    printLaberinto(laberinto)
+    
     localizarmeta(laberinto)
-    x, y=locateBot()
-    EstadoBase= Estado(x, y, 0, laberinto, "", 0, Estado())
-    #añadir a la cola 
-    abiertos.put(EstadoBase.getHeuristica(totalMonedas,metax,metay),EstadoBase)
+    x, y=locateBot(laberinto)
+    while x!=-1:
+        EstadoBase= Estado(x, y, 0, laberinto, " ", 0, None)
+        #añadir a la cola 
+        abiertos.put(EstadoBase, EstadoBase.getHeuristica(totalMonedas,metax,metay))
+        expandir()
+        mostrarsolucion()
+        x, y=locateBot()
     
 if __name__ == '__main__':
     main()

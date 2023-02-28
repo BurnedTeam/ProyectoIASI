@@ -8,7 +8,7 @@ class Estado:
     coin=0
     x=0
     y=0
-    tablero=[None][None]
+    tablero = [[None for j in range(10)] for i in range(10)]
     movimientoRealizado=''
     totalMovs=0
     
@@ -20,7 +20,10 @@ class Estado:
         self.movimientoRealizado = movimientoRealizado
         self.totalMovs = totalMovs
         self.estadoPadre = estadoPadre
-        
+    
+    def getposicion(self):
+        return(self.x, self.y)
+    
     def getestado(self):
         return (self.tablero, self.x, self.y, self.coin, self.movimientoRealizado)
     
@@ -30,8 +33,7 @@ class Estado:
         if(totalMonedas<=self.coin):
             return math.dist(meta, robot)
         else:
-            return ((totalMonedas-self.coin)/2+math.dist(meta, robot)*2+math.dist(self.getMonedaCercana(),robot)/3)
-        
+            return ((totalMonedas-self.coin)/2+math.dist(meta, robot)/2+math.dist(self.getMonedaCercana(),robot)/3)
         
     def getMonedaCercana(self):
         fila=0
@@ -40,7 +42,7 @@ class Estado:
         actualMoneda=[-1,-1]
         mejorValor=0
         actualValor=0
-        for linea in self.laberinto:
+        for linea in self.tablero:
             columna=0
             for valor in linea: 
                 actualMoneda=[fila,columna]

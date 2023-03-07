@@ -8,7 +8,7 @@ class Estado:
     coin=0
     x=0
     y=0
-    tablero = [[None for j in range(10)] for i in range(10)]
+    tablero = None
     movimientoRealizado=''
     totalMovs=0
     
@@ -31,9 +31,9 @@ class Estado:
         meta=[metax, metay]
         robot=[self.x, self.y]
         if(totalMonedas<=self.coin):
-            return math.dist(meta, robot)
+            return math.dist(meta, robot)+self.totalMovs
         else:
-            return ((totalMonedas-self.coin)/2+math.dist(meta, robot)/2+math.dist(self.getMonedaCercana(),robot)/3)
+            return ((totalMonedas-self.coin)/2+math.dist(meta, robot)/2+math.dist(self.getMonedaCercana(),robot)/3)+self.totalMovs
         
     def getMonedaCercana(self):
         fila=0

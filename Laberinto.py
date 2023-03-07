@@ -17,6 +17,29 @@ abiertos=queue.PriorityQueue()
 #Vecator de estados de los que ya hemos desarrollado sus hijos
 cerrados=[]
 
+def comparaHijos(hijos):
+    abiertosFinal=queue.PriorityQueue()
+    cerradosFinal
+    for hijo in hijos:
+        for cases in cerrados:
+            if cases.tablero==hijo.tablero:
+                if(cases.totalMovs>hijo.totalMovs):
+                    abiertosFinal.put(hijo, hijo.getHeuristica(totalMonedas,metax,metay))
+                else:
+                    abiertosFinal.put(cases, cases.getHeuristica(totalMonedas,metax,metay))
+            else:
+                abiertosFinal.put(cases, cases.getHeuristica(totalMonedas,metax,metay))
+        
+        for cases in abiertos:
+            if cases.tablero==hijo.tablero:
+                if(cases.totalMovs>hijo.totalMovs):
+                    abiertosFinal.put(hijo, hijo.getHeuristica(totalMonedas,metax,metay))
+                else:
+                    abiertosFinal.put(cases, cases.getHeuristica(totalMonedas,metax,metay))
+            else:
+                abiertosFinal.put(cases, cases.getHeuristica(totalMonedas,metax,metay))
+    abiertos=abiertosFinal
+
 def lectura_fichero(nom_fichero):
     # Abrir el archivo con nombre especificado en el parámetro "nom_fichero" en modo lectura ('r')
     with open(nom_fichero, 'r') as fichero: 
@@ -145,22 +168,25 @@ def movimiento(node, parent):
         return 'Abajo'
 
 def expansionesDeEstado(padre):
-    hijos= []
-    aux=padre
-    x= padre.x
-    y=padre.y
-    for x in range(padre.x-1 , padre.x+2):
-        for y in range(padre.y-1 , padre.y+2):
-    #for x in padre.tablero[x-1:x+1]:
-        #for y in padre.tablero[y-1:y+1]:
-            if padre.tablero[x][y] not in (8,9) and padre not in cerrados:
-                aux.x=x
-                aux.y=y
-                aux.estadoPadre=padre
-                aux.movimientoRealizado=movimiento(aux, padre)
-                aux.totalMovs=1 + padre.totalMovs
-                hijos.add(aux.laberinto)
-    return hijos  
+    hijos = []
+    x = padre.x
+    y = padre.y
+    i = padre.x
+    j = padre.y
+    for x in range(i-1, i+2):
+        for y in range(j-1, j+2):
+            if padre.tablero[x][y] not in (8, 9):
+                aux = Estado(x,y,0,padre.tablero,'',1 + padre.totalMovs, padre)
+                #no se como guardamos que moviemiento por que creo que no lo hacemos 
+                aux.movimientoRealizado = movimiento(aux, padre)
+                if aux.tablero[x][y] in range(1, 6):
+                    aux.coin = padre.coin + aux.tablero[x][y]
+                else:
+                    aux.coin = padre.coin
+                aux.tablero[x][y] = 8
+                hijos.append(aux)
+     
+    return hijos 
                 
 def expandir():
     global metax
@@ -171,18 +197,20 @@ def expandir():
         cerrados.append(estadoact)
         #print(estadoact.x,estadoact.y)
         if estadoact.x == metax and estadoact.y == metay and estadoact.coin >= totalMonedas:
+            solucion.append(estadoact)
             while estadoact.estadoPadre :
                 solucion.append(estadoact.estadoPadre)
+                estadoact=estadoact.estadoPadre
             return solucion
         hijos = expansionesDeEstado(estadoact)
         for hijo in hijos:
-            if hijo not in abiertos:
-                abiertos.put(hijo, hijo.getHeuristica(totalMonedas,metax,metay)+hijo.movimientoRealizado)
+            if hijo not in abiertos and hijo not in cerrados:
+                abiertos.put(hijo, hijo.getHeuristica(totalMonedas,metax,metay))        
 
 def mostrarsolucion():
     while solucion:
-        print (solucion.pop())
-    
+        estadoMostrar=solucion.pop()
+        print (estadoMostrar.movimientoRealizado)
 def printLaberinto(laberinto):
     print()
     for linea in laberinto:
@@ -207,10 +235,11 @@ def main():
     
     localizarmeta(laberinto)
     x, y=locateBot(laberinto)
+    EstadoBase= Estado(x, y, 0, laberinto, " ", 0, None)
+    #añadir a la cola 
+    abiertos.put(EstadoBase, EstadoBase.getHeuristica(totalMonedas,metax,metay))
+
     while x!=-1:
-        EstadoBase= Estado(x, y, 0, laberinto, " ", 0, None)
-        #añadir a la cola 
-        abiertos.put(EstadoBase, EstadoBase.getHeuristica(totalMonedas,metax,metay))
         expandir()
         mostrarsolucion()
         x, y=locateBot()

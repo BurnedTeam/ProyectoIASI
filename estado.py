@@ -31,9 +31,9 @@ class Estado:
         meta=[metax, metay]
         robot=[self.x, self.y]
         if(totalMonedas<=self.coin):
-            return math.dist(meta, robot)+self.totalMovs
+            return math.dist(meta, robot)
         else:
-            return ((totalMonedas-self.coin)/2+math.dist(meta, robot)/2+math.dist(self.getMonedaCercana(),robot)/3)+self.totalMovs
+            return (((totalMonedas-self.coin)/3)+((math.dist(meta, robot)+4)/2)+(math.dist(self.getMonedaCercana(),robot)/8))
         
     def getMonedaCercana(self):
         fila=0

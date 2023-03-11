@@ -1,8 +1,7 @@
 from estado import Estado
-#Importar la biblioteca heapq para la implementación de la cola de prioridad
-import queue
-    
+import copy
 
+    
 #Posicion de la meta
 global metax
 global metay
@@ -11,34 +10,7 @@ global totalMonedas
 #Vector de estados del que sacaremos la solucion con Estado.movimiento
 solucion=[]
 
-#Cola de estados por los que podemos seguir avanzando
-abiertos=queue.PriorityQueue()
 
-#Vecator de estados de los que ya hemos desarrollado sus hijos
-cerrados=[]
-
-def comparaHijos(hijos):
-    abiertosFinal=queue.PriorityQueue()
-    cerradosFinal
-    for hijo in hijos:
-        for cases in cerrados:
-            if cases.tablero==hijo.tablero:
-                if(cases.totalMovs>hijo.totalMovs):
-                    abiertosFinal.put(hijo, hijo.getHeuristica(totalMonedas,metax,metay))
-                else:
-                    abiertosFinal.put(cases, cases.getHeuristica(totalMonedas,metax,metay))
-            else:
-                abiertosFinal.put(cases, cases.getHeuristica(totalMonedas,metax,metay))
-        
-        for cases in abiertos:
-            if cases.tablero==hijo.tablero:
-                if(cases.totalMovs>hijo.totalMovs):
-                    abiertosFinal.put(hijo, hijo.getHeuristica(totalMonedas,metax,metay))
-                else:
-                    abiertosFinal.put(cases, cases.getHeuristica(totalMonedas,metax,metay))
-            else:
-                abiertosFinal.put(cases, cases.getHeuristica(totalMonedas,metax,metay))
-    abiertos=abiertosFinal
 
 def lectura_fichero(nom_fichero):
     # Abrir el archivo con nombre especificado en el parámetro "nom_fichero" en modo lectura ('r')
@@ -70,54 +42,7 @@ def lectura_fichero(nom_fichero):
         return n, laberinto
 
 
-def mover(laberinto, movimiento, puntos, win, i, j, lengLine):
-    # Obtener las coordenadas actuales de la posición del robot (8)
-    x, y = i, j
-    # Verificar el movimiento y actualizar las coordenadas según sea necesario
-    if movimiento == 'W':
-        x = x - 1
-    elif movimiento == 'A':
-        y = y - 1
-    elif movimiento == 'S':
-        x = x + 1
-    elif movimiento == 'D':
-        y = y + 1
-    elif movimiento == 'DS' or movimiento == 'SD':
-        y = y + 1
-        x = x + 1
-    elif movimiento == 'AS' or movimiento == 'SA':
-        y = y - 1
-        x = x + 1
-    elif movimiento == 'AW' or movimiento == 'WA':
-        y = y - 1
-        x = x - 1
-    elif movimiento == 'WD' or movimiento == 'DW':
-        y = y + 1
-        x = x - 1
-    
-    # Verificar si el nuevo movimiento es posible (no fuera de los límites del laberinto ni colisión con un obstáculo)
-    if 0 <= x < len(laberinto) and 0 <= y < lengLine and laberinto[x][y] != 9:
-        # Actualizar la posición del robot en el laberinto
-        if laberinto[x][y]==7:
-            laberinto[i][j] = 0
-            i,j,lengLine=locateBot(laberinto)
-            if i==-1:
-                win=True
-                laberinto[x][y] = 8
-            else:
-                x,y=i,j
-        elif laberinto[x][y]==0:
-            laberinto[x][y] = 8
-            laberinto[i][j] = 0
-        else:
-            puntos=puntos+1
-            laberinto[x][y] = 8
-            laberinto[i][j] = 0
-        # Retornar el laberinto actualizado
-        return laberinto, puntos, win, x, y
-            
-    # Retornar el laberinto sin cambios (en caso de no ser posible el movimiento)
-    return laberinto, puntos, win, i, j
+
            
 #Localiza la posicion del robot
 def locateBot(laberinto):
@@ -136,8 +61,8 @@ def localizarmeta(laberinto):
             if valor==7:
                 global metax
                 global metay
-                metay=fila
-                metax=columna
+                metay=columna
+                metax=fila
             columna=columna+1            
         fila=fila+1 
         
@@ -168,44 +93,62 @@ def movimiento(node, parent):
         return 'Abajo'
 
 def expansionesDeEstado(padre):
+    global metax
+    global metay
+    global totalMonedas
     hijos = []
     x = padre.x
     y = padre.y
     i = padre.x
-    j = padre.y
-    for x in range(i-1, i+2):
-        for y in range(j-1, j+2):
-            if padre.tablero[x][y] not in (8, 9):
-                aux = Estado(x,y,0,padre.tablero,'',1 + padre.totalMovs, padre)
-                #no se como guardamos que moviemiento por que creo que no lo hacemos 
-                aux.movimientoRealizado = movimiento(aux, padre)
-                if aux.tablero[x][y] in range(1, 6):
-                    aux.coin = padre.coin + aux.tablero[x][y]
-                else:
-                    aux.coin = padre.coin
-                aux.tablero[x][y] = 8
-                hijos.append(aux)
-     
-    return hijos 
+    j = padre.y 
+    encontrado=False
+    while encontrado==False:    
+        for x in range(i-1, i+2):
+            for y in range(j-1, j+2):
+                if padre.tablero[x][y] not in (8, 9):
+                    aux = Estado(x,y,0,padre.tablero,'',1 + padre.totalMovs, padre)
+                    aux.movimientoRealizado = movimiento(aux, padre)
+                    if aux.tablero[x][y] in range(1, 6):
+                        aux.coin = padre.coin + aux.tablero[x][y]
+                    else:
+                        aux.coin = padre.coin
+                    aux.tablero = copy.deepcopy(padre.tablero)
+                    aux.tablero[x][y] = 8
+                    aux.tablero[i][j] = 0
+                    if(round(aux.getHeuristica(totalMonedas,metax,metay),3)< round(padre.getHeuristica(totalMonedas,metax,metay),3)):
+                        encontrado=True
+                        print("El nuevo estado actual es :",aux.x,aux.y)
+                        printLaberinto(aux.tablero)
+                        return aux
+        encontrado=True            
+                    
+
+    return None 
                 
 def expandir():
     global metax
     global metay
     global totalMonedas
-    while abiertos:
-        estadoact=abiertos.get()
-        cerrados.append(estadoact)
-        #print(estadoact.x,estadoact.y)
+    while True:
+        estadoact= solucion[-1]
+        print("Nuevo estado a desarollar",estadoact.x,estadoact.y,"que tiene las siguientes monedas",estadoact.coin)
+        monedax,moneday=estadoact.getMonedaCercana()
+        print("la moneda mas cercana ahora mismo es ", monedax, moneday)
         if estadoact.x == metax and estadoact.y == metay and estadoact.coin >= totalMonedas:
-            solucion.append(estadoact)
-            while estadoact.estadoPadre :
-                solucion.append(estadoact.estadoPadre)
-                estadoact=estadoact.estadoPadre
+            print("resuelto por escalada")
             return solucion
-        hijos = expansionesDeEstado(estadoact)
-        for hijo in hijos:
-            if hijo not in abiertos and hijo not in cerrados:
-                abiertos.put(hijo, hijo.getHeuristica(totalMonedas,metax,metay))        
+        elif estadoact.x == metax and estadoact.y == metay:
+            print("llegado a la solucion pero con :", estadoact.coin," monedas necesitando :",totalMonedas)
+            return 0
+        else:
+            hijo=expansionesDeEstado(estadoact)
+            if hijo != None:
+                solucion.append(hijo)
+            else:
+                print("no se puede resolver  por escalada")
+                return 0
+
+        
 
 def mostrarsolucion():
     while solucion:
@@ -228,6 +171,8 @@ def printLaberinto(laberinto):
         print() 
     
 def main():
+    global metax
+    global metay
     n, laberinto = lectura_fichero("LABECOIN1.txt")
     print("n:", n)
     print("laberinto a resolver:")
@@ -237,12 +182,13 @@ def main():
     x, y=locateBot(laberinto)
     EstadoBase= Estado(x, y, 0, laberinto, " ", 0, None)
     #añadir a la cola 
-    abiertos.put(EstadoBase, EstadoBase.getHeuristica(totalMonedas,metax,metay))
+    solucion.append(EstadoBase)    
+    print("las posicion original del robot es :", x,y, "la cual tiene una euristica inicial de :",EstadoBase.getHeuristica(totalMonedas,metax,metay) )
+    monedax,moneday=EstadoBase.getMonedaCercana()
+    print("la moneda mas cercana ahora mismo es ", monedax, moneday)
+    print("la posicion de la meta es ",metax,metay)
+    expandir()
 
-    while x!=-1:
-        expandir()
-        mostrarsolucion()
-        x, y=locateBot()
     
 if __name__ == '__main__':
     main()

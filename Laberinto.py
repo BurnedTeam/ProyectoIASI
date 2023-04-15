@@ -1,12 +1,18 @@
 from estado import Estado
+from colorama import Style, init, Fore
+from termcolor import colored
+
+
+
 import copy
+import time
 
     
 #Posicion de la meta
 global metax
 global metay
+global trama
 global totalMonedas
-
 #Vector de estados del que sacaremos la solucion con Estado.movimiento
 solucion=[]
 
@@ -78,24 +84,25 @@ def movimiento(node, parent):
     if node.x < parent.x and node.y < parent.y:
         return 'Izquierda Arriba'
     elif node.x < parent.x and node.y > parent.y:
-        return 'Izquierda Abajo'
-    elif node.x > parent.x and node.y < parent.y:
         return 'Derecha Arriba'
+    elif node.x > parent.x and node.y < parent.y:
+        return 'Izquierda Abajo '
     elif node.x > parent.x and node.y > parent.y:
         return 'Derecha Abajo'
     elif node.x < parent.x:
-        return 'Iquierda'
-    elif node.x > parent.x:
-        return 'Derecha'
-    elif node.y < parent.y:
         return 'Arriba'
-    elif node.y > parent.y:
+    elif node.x > parent.x:
         return 'Abajo'
+    elif node.y < parent.y:
+        return 'Iquierda'
+    elif node.y > parent.y:
+        return 'Derecha'
 
 def expansionesDeEstado(padre):
     global metax
     global metay
     global totalMonedas
+    global trama
     hijos = []
     x = padre.x
     y = padre.y
@@ -108,20 +115,21 @@ def expansionesDeEstado(padre):
                 if padre.tablero[x][y] not in (8, 9):
                     aux = Estado(x,y,0,padre.tablero,'',1 + padre.totalMovs, padre)
                     aux.movimientoRealizado = movimiento(aux, padre)
-                    if aux.tablero[x][y] in range(1, 6):
-                        aux.coin = padre.coin + aux.tablero[x][y]
+                    if padre.tablero[x][y] in range(1, 7): #esta jocoso el python el 1 es cerrado pero el 7 es abierto jaja saludos
+                        aux.coin = padre.coin + padre.tablero[x][y]
                     else:
                         aux.coin = padre.coin
                     aux.tablero = copy.deepcopy(padre.tablero)
                     aux.tablero[x][y] = 8
                     aux.tablero[i][j] = 0
-                    if(round(aux.getHeuristica(totalMonedas,metax,metay),3)< round(padre.getHeuristica(totalMonedas,metax,metay),3)):
+                    if(round(aux.getHeuristica(totalMonedas,metax,metay),3)< round(padre.getHeuristica(totalMonedas,metax,metay),3) or aux.coin > padre.coin ):
                         encontrado=True
-                        print("El nuevo estado actual es :",aux.x,aux.y)
-                        printLaberinto(aux.tablero)
+                        if trama==1:
+                            print("El nuevo estado actual es :",aux.x,aux.y)
+                            printLaberinto(aux.tablero)
                         return aux
         encontrado=True            
-                    
+                
 
     return None 
                 
@@ -129,31 +137,50 @@ def expandir():
     global metax
     global metay
     global totalMonedas
+    global trama
     while True:
         estadoact= solucion[-1]
-        print("Nuevo estado a desarollar",estadoact.x,estadoact.y,"que tiene las siguientes monedas",estadoact.coin)
+        if trama==1:
+            print("Nuevo estado a desarollar",estadoact.x,estadoact.y,"que tiene las siguientes 💲",estadoact.coin)
         monedax,moneday=estadoact.getMonedaCercana()
-        print("la moneda mas cercana ahora mismo es ", monedax, moneday)
+        if trama==1:
+            print("la moneda mas cercana ahora mismo es ", monedax, moneday)
         if estadoact.x == metax and estadoact.y == metay and estadoact.coin >= totalMonedas:
-            print("resuelto por escalada")
+            printLaberinto(estadoact.tablero)
+            print("")
+            print("")            
+            print(Fore.RED + Style.BRIGHT + "RESUELTO POR ESCALADA")
             return solucion
+
         elif estadoact.x == metax and estadoact.y == metay:
-            print("llegado a la solucion pero con :", estadoact.coin," monedas necesitando :",totalMonedas)
+            print("")
+            print("")
+            print(Fore.RED +"LLEGADO A LA SOLUCION PERO CON  :", estadoact.coin," 💲 Y NECESITAVA :",totalMonedas)
             return 0
         else:
             hijo=expansionesDeEstado(estadoact)
             if hijo != None:
                 solucion.append(hijo)
             else:
-                print("no se puede resolver  por escalada")
+                print("")
+                print("")
+                print(Fore.RED +Style.BRIGHT +"NO SE PUEDE RESOLVER POR ESCALADA")
+                print("NO HAY UN ESTADO CON MEJOR EURISTICA QUE EL ACTUAL")
+                print("NOS QUEDARIA EL SIGUIENTE LABERINTO")
+
+                printLaberinto(estadoact.tablero)
                 return 0
 
         
 
 def mostrarsolucion():
+    print(Style.NORMAL+Fore.WHITE+"")
+
+    print(Style.NORMAL+Fore.GREEN+"Los movientos realizados son:")
     while solucion:
-        estadoMostrar=solucion.pop()
-        print (estadoMostrar.movimientoRealizado)
+        estadoMostrar=solucion.pop(0)
+        print(Fore.GREEN+estadoMostrar.movimientoRealizado)
+    print(Style.NORMAL+Fore.WHITE+"")
 def printLaberinto(laberinto):
     print()
     for linea in laberinto:
@@ -173,21 +200,36 @@ def printLaberinto(laberinto):
 def main():
     global metax
     global metay
-    n, laberinto = lectura_fichero("LABECOIN1.txt")
+    global trama
+    n, laberinto = lectura_fichero("LABECOIN8.txt")
     print("n:", n)
     print("laberinto a resolver:")
     printLaberinto(laberinto)
-    
+    print("")
+    print("")
+    print(Fore.MAGENTA+"Trama 0 sin trama")
+    print("Trama 1 trama basica")
+    trama = int(input("Indica el nivel de la trama: "))
+    print("")
+
+
     localizarmeta(laberinto)
     x, y=locateBot(laberinto)
     EstadoBase= Estado(x, y, 0, laberinto, " ", 0, None)
     #añadir a la cola 
-    solucion.append(EstadoBase)    
-    print("las posicion original del robot es :", x,y, "la cual tiene una euristica inicial de :",EstadoBase.getHeuristica(totalMonedas,metax,metay) )
+    solucion.append(EstadoBase)
+    if(trama==1):    
+        print(Fore.CYAN+"las posicion original del robot es :", x,y, "la cual tiene una euristica inicial de :",EstadoBase.getHeuristica(totalMonedas,metax,metay) )
     monedax,moneday=EstadoBase.getMonedaCercana()
-    print("la moneda mas cercana ahora mismo es ", monedax, moneday)
-    print("la posicion de la meta es ",metax,metay)
+    if(trama==1):
+        print("la 💲💲💲 mas cercana ahora mismo es ", monedax, moneday)
+        print("la posicion de la meta es ",metax,metay)      
+        print("")
+        print("")
+        print("")
+
     expandir()
+    mostrarsolucion()
 
     
 if __name__ == '__main__':

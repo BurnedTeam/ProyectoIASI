@@ -33,24 +33,23 @@ class Estado:
         if(totalMonedas<=self.coin):
             return math.dist(meta, robot)
         else:
-            return (((totalMonedas-self.coin)/3)+((math.dist(meta, robot)+4)/2)+(math.dist(self.getMonedaCercana(),robot)/8))
+            return (math.dist(self.getMonedaCercana(),robot))
         
     def getMonedaCercana(self):
-        fila=0
-        robot=[self.x, self.y]
-        mejorMoneda=[-1,-1]
-        actualMoneda=[-1,-1]
-        mejorValor=0
-        actualValor=0
+        fila = 0
+        robot = [self.x, self.y]
+        mejorMoneda = [-1, -1]
+        mejorDistancia = float('inf')
         for linea in self.tablero:
-            columna=0
-            for valor in linea: 
-                actualMoneda=[fila,columna]
-                actualValor=valor/3-math.dist(robot, actualMoneda)
-                if  1 <= valor <= 6 and mejorValor<actualValor:
-                    mejorValor=actualValor
-                    mejorMoneda=actualMoneda
-                columna=columna+1            
-            fila=fila+1 
+            columna = 0
+            for valor in linea:
+                if 1 <= valor <= 6:
+                    moneda = [fila, columna]
+                    distancia = math.dist(robot, moneda)
+                    if distancia < mejorDistancia:
+                        mejorDistancia = distancia
+                        mejorMoneda = moneda
+                columna += 1
+            fila += 1
         return mejorMoneda
-        
+

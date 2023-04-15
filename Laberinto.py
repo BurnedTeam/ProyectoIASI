@@ -1,12 +1,13 @@
 from estado import Estado
 import copy
-
+from colorama import Style, init, Fore
+from termcolor import colored
     
 #Posicion de la meta
 global metax
 global metay
 global totalMonedas
-
+global trama
 #Vector de estados del que sacaremos la solucion con Estado.movimiento
 solucion=[]
 
@@ -66,48 +67,47 @@ def localizarmeta(laberinto):
             columna=columna+1            
         fila=fila+1 
         
-# def ordenarAbiertos(): 
-#     n=len(abiertos)
-    
-#     for i in range(n-1):
-#         for j in range(n-1-i):
-#             if abiertos[j].getHeuristica(totalMonedas, metax, metay) + abiertos[j].totalMovs > abiertos[j+1].getHeuristica(totalMonedas, metax, metay) + abiertos[j+1].totalMovs:
-#                 abiertos[j], abiertos[j+1]=abiertos[j+1], abiertos[j]
+
 
 def movimiento(node, parent):
     if node.x < parent.x and node.y < parent.y:
         return 'Izquierda Arriba'
     elif node.x < parent.x and node.y > parent.y:
-        return 'Izquierda Abajo'
-    elif node.x > parent.x and node.y < parent.y:
         return 'Derecha Arriba'
+    elif node.x > parent.x and node.y < parent.y:
+        return 'Izquierda Abajo '
     elif node.x > parent.x and node.y > parent.y:
         return 'Derecha Abajo'
     elif node.x < parent.x:
-        return 'Iquierda'
-    elif node.x > parent.x:
-        return 'Derecha'
-    elif node.y < parent.y:
         return 'Arriba'
-    elif node.y > parent.y:
+    elif node.x > parent.x:
         return 'Abajo'
+    elif node.y < parent.y:
+        return 'Iquierda'
+    elif node.y > parent.y:
+        return 'Derecha'
 
 def expansionesDeEstado(padre):
     global metax
     global metay
     global totalMonedas
+    global trama
+
     hijos = []
     x = padre.x
     y = padre.y
     i = padre.x
     j = padre.y 
+    if (trama==2):
+        print("Estudio de los alrededores: x,y,valor")   
     for x in range(i-1, i+2):
         for y in range(j-1, j+2):
-            print(x,y,padre.tablero[x][y])
+            if (trama==2):
+                print(x,y,padre.tablero[x][y])
             if padre.tablero[x][y] not in (8, 9):
                 aux = Estado(x,y,0,padre.tablero,'',1 + padre.totalMovs, padre)
                 aux.movimientoRealizado = movimiento(aux, padre)
-                if aux.tablero[x][y] in range(1, 6):
+                if aux.tablero[x][y] in range(1, 7):
                     aux.coin = padre.coin + aux.tablero[x][y]
                 else:
                     aux.coin = padre.coin
@@ -116,10 +116,12 @@ def expansionesDeEstado(padre):
                 aux.tablero[i][j] = 0
                 hijos.append(aux)
     for hijo in hijos:
-        print("los posibles estados a los que ir son: ",hijo.x,hijo.y,end=" ")
-        print("con euristica: ",round(hijo.getHeuristica(totalMonedas,metax,metay),3))
+        if(trama==1 or trama ==2):
+            print("los posibles estados a los que ir son: ",hijo.x,hijo.y,end=" ")
+            print("con euristica: ",round(hijo.getHeuristica(totalMonedas,metax,metay),3))
     if len(hijos) == 0:
-        print("no hay mas estados ")
+        if(trama==1 or trama ==2):
+            print("no hay mas estados posibles a los que ir")
 
     return hijos 
                 
@@ -127,37 +129,60 @@ def expandir():
     global metax
     global metay
     global totalMonedas
+    global trama
+
     while True:
         estadoact= solucion[-1]
-        print("Nuevo estado a desarollar",estadoact.x,estadoact.y,"que tiene las siguientes monedas",estadoact.coin)
+        if(trama==1 or trama ==2):
+            print("Nuevo estado a desarollar",estadoact.x,estadoact.y,"que tiene las siguientes monedas",estadoact.coin)
         monedax,moneday=estadoact.getMonedaCercana()
-        print("la moneda mas cercana ahora mismo es ", monedax, moneday)
+        if(trama==1 or trama ==2):
+            print("la moneda mas cercana ahora mismo es ", monedax, moneday)
         EstadoMejor= Estado
-        
         if estadoact.x == metax and estadoact.y == metay and estadoact.coin >= totalMonedas:
-            print("resuelto por escalada")
+            print("")
+            print("")
+            print("")            
+            print(Fore.RED+"RESUELTO POR ESCALADA MAXIMA PENDIENTE")
             return solucion
         else:
             hijos=expansionesDeEstado(estadoact)
             EstadoMejor=hijos[0]
             for hijo in hijos:
-                if EstadoMejor.getHeuristica(totalMonedas,metax,metay)> hijo.getHeuristica(totalMonedas,metax,metay):
-                    EstadoMejor=hijo
-            print("los estados a compara esta vez son: ",round(EstadoMejor.getHeuristica(totalMonedas,metax,metay),2),round(estadoact.getHeuristica(totalMonedas,metax,metay),2))       
-            if EstadoMejor.getHeuristica(totalMonedas,metax,metay) < estadoact.getHeuristica(totalMonedas,metax,metay):
-                print("El nuevo estado actual es :",EstadoMejor.x,EstadoMejor.y)
-                printLaberinto(EstadoMejor.tablero)
+                if(EstadoMejor.coin <hijo.coin and EstadoMejor.coin<totalMonedas):
+                        EstadoMejor=hijo
+                else:
+                    if(EstadoMejor.getHeuristica(totalMonedas,metax,metay)> hijo.getHeuristica(totalMonedas,metax,metay) and hijo.coin>= EstadoMejor.coin):
+                        EstadoMejor=hijo
+            if(trama==2):            
+                print("los estados a compara esta vez son los de euristica: ",round(EstadoMejor.getHeuristica(totalMonedas,metax,metay),2),round(estadoact.getHeuristica(totalMonedas,metax,metay),2))       
+            if EstadoMejor.getHeuristica(totalMonedas,metax,metay) < estadoact.getHeuristica(totalMonedas,metax,metay) or EstadoMejor.coin >estadoact.coin:
+                if(trama ==2):
+                    print("El nuevo estado actual es :",EstadoMejor.x,EstadoMejor.y)
+                if(trama==1 or trama ==2):
+                    printLaberinto(EstadoMejor.tablero)
                 solucion.append(EstadoMejor)
             else:
-                print("Imposible resolver por escalada")
+                print("")
+                print("")
+                print("")
+                print(Fore.RED+Style.BRIGHT +"NO HAY ESTADO CON MEJOR EURISTICA QUE EL ACTUAL")
+                print(Fore.RED+"IMPOSIBLE RESOLVER POR ESCALADA MAXIMA PENDIENTE")
+                print(Fore.RED+"NOS QUEDARIA EL SIGUIENTE LABERINTO")
+                printLaberinto(estadoact.tablero)
+                
                 return 0
 
         
 
 def mostrarsolucion():
+    print(Style.NORMAL+Fore.WHITE+"")
+
+    print(Style.NORMAL+Fore.GREEN+"Los movientos realizados son:")
     while solucion:
-        estadoMostrar=solucion.pop()
-        print (estadoMostrar.movimientoRealizado)
+        estadoMostrar=solucion.pop(0)
+        print(Fore.GREEN+estadoMostrar.movimientoRealizado)
+    print(Style.NORMAL+Fore.WHITE+"")
 def printLaberinto(laberinto):
     print()
     for linea in laberinto:
@@ -177,30 +202,38 @@ def printLaberinto(laberinto):
 def main():
     global metax
     global metay
-    n, laberinto = lectura_fichero("LABECOIN10.txt")
+    global trama
+
+    n, laberinto = lectura_fichero("LABECOIN3.txt")
     print("n:", n)
     print("laberinto a resolver:")
     printLaberinto(laberinto)
+    
+    print(Fore.MAGENTA+"0 sin Trama")
+    print("1 Trama basica")
+    print("2 Trama Avanzada")
+
+    trama = int(input("Indica el nivel de la trama: "))
+    print("")
     
     localizarmeta(laberinto)
     x, y=locateBot(laberinto)
     EstadoBase= Estado(x, y, 0, laberinto, " ", 0, None)
     #añadir a la cola 
     solucion.append(EstadoBase)    
-    print("las posicion original del robot es :", x,y, "la cual tiene una euristica inicial de :",EstadoBase.getHeuristica(totalMonedas,metax,metay) )
+    if(trama==1 or trama==2):
+        print(Fore.CYAN+"las posicion original del robot es :", x,y, "la cual tiene una euristica inicial de :",EstadoBase.getHeuristica(totalMonedas,metax,metay) )
     monedax,moneday=EstadoBase.getMonedaCercana()
-    print("la moneda mas cercana ahora mismo es ", monedax, moneday)
-    print("la posicion de la meta es ",metax,metay)
+    if(trama==1 or trama==2):
+        print("la moneda mas cercana ahora mismo es ", monedax, moneday)
+        print("la posicion de la meta es ",metax,metay)
+        print("")
+        print("")
+        print("")
     expandir()
+    mostrarsolucion()
 
     
 if __name__ == '__main__':
     main()
 
-#Usar un vector para guardar los estados en los que hemos ido pasando y cuando lleguemos al objetivo el vector sera la solucion
-#Escalada simple: en cuanto encuntre un estado mejor pasa a ese estado y si llega a un punto que no hay estados mejores vuelve uno atras (se relaja)
-#Maxima pendiente: va mirando posibles estados y nos quedamos con el que este mas cerca de la salida. Si no hay mejores hace lo mismo que en escalada simple
-
-#Colas
-#nombre.put(heuristica, estado)
-#nombre.get()[1]

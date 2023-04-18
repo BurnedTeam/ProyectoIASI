@@ -35,7 +35,15 @@ def graficos():
             return "ULTRA"+Fore.RESET+" (Solo si puede ver esto 🟫 🤖 🚩 💲)"
         elif config.safegraphic==True:
             return "Modo Seguro"
-
+def debugSel():
+        if config.debug == 0:
+            return "Desactivado"
+        elif config.debug == 1:
+            return "Basico"
+        elif config.debug == 2:
+            return "Avanzado"
+        elif config.debug == 3:
+            return "Everything"
 def menu(op):
     if op==0:
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -43,18 +51,28 @@ def menu(op):
         print(Fore.CYAN+"-> "+Fore.YELLOW+"ENTRAR EN PROGRAMA")
         print(Fore.GREEN+"   Modo seleccionado: "+Fore.MAGENTA+modoSel())
         print(Fore.GREEN+"   Graficos: "+Fore.MAGENTA+graficos())
+        print(Fore.GREEN+"   Nivel de Debug: "+Fore.MAGENTA+debugSel())
     elif op==1:
         os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + logo + Fore.RESET)
         print(Fore.GREEN+"   ENTRAR EN PROGRAMA")
         print(Fore.CYAN+"-> "+Fore.YELLOW+"Modo seleccionado: "+Fore.CYAN+"<- "+Fore.MAGENTA+modoSel()+Fore.CYAN+" ->")
         print(Fore.GREEN+"   Graficos: "+Fore.MAGENTA+graficos())
+        print(Fore.GREEN+"   Nivel de Debug: "+Fore.MAGENTA+debugSel())
     elif op==2:
         os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + logo + Fore.RESET)
         print(Fore.GREEN+"   ENTRAR EN PROGRAMA")
         print(Fore.GREEN+"   Modo seleccionado: "+Fore.MAGENTA+modoSel())
-        print(Fore.CYAN+"-> "+Fore.YELLOW+"Graficos: "+Fore.CYAN+"<- "+Fore.MAGENTA+graficos()+Fore.CYAN+"->")
+        print(Fore.CYAN+"-> "+Fore.YELLOW+"Graficos: "+Fore.CYAN+"<- "+Fore.MAGENTA+graficos()+Fore.CYAN+" ->")
+        print(Fore.GREEN+"   Nivel de Debug: "+Fore.MAGENTA+debugSel())
+    elif op==3:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(Fore.RED + logo + Fore.RESET)
+        print(Fore.GREEN+"   ENTRAR EN PROGRAMA")
+        print(Fore.GREEN+"   Modo seleccionado: "+Fore.MAGENTA+modoSel())
+        print(Fore.GREEN+"   Graficos: "+Fore.MAGENTA+graficos())
+        print(Fore.CYAN+"-> "+Fore.YELLOW+"Nivel de Debug: "+Fore.CYAN+"<- "+Fore.MAGENTA+debugSel()+Fore.CYAN+" ->")
     
     print(Fore.RESET+"\n                      ⬆")
     print("             Pulse ⬅  ⬇ ➡  para moverse por el menú")
@@ -65,11 +83,11 @@ def menu(op):
     
 def launchPy():
     if(config.modo==0):
-        AE.AEstrella()
+        AE.AEstrella(config.debug)
     elif(config.modo==1):
-        MES.EscaladaSimple()
+        MES.EscaladaSimple(config.debug)
     elif(config.modo==2):
-        MP.MaximaPendiente()
+        MP.MaximaPendiente(config.debug)
     elif(config.modo==3):
         MPy.MazePlayer()
     elif(config.modo==4):
@@ -85,7 +103,7 @@ def main():
         if(key==b'\xe0'or key==b'\x00'):
             key= ms.getch()
             if(key==b'P'):
-                if(op<2):
+                if(op<3):
                     op+=1
                 else:
                     op=0
@@ -93,7 +111,7 @@ def main():
                 if(op>0):
                     op-=1
                 else:
-                    op=2
+                    op=3
             if(key==b'M'):
                 if(op==1):
                     if(config.modo<4):
@@ -104,6 +122,12 @@ def main():
                 if(op==2):
                     config.safegraphic=not(config.safegraphic)
                     config.write_config()
+                if(op==3):
+                    if(config.debug<3):
+                        config.debug+=1
+                    else:
+                        config.debug=0
+                    config.write_config()
             if(key==b'K'):
                 if(op==1):
                     if(config.modo>0):
@@ -113,6 +137,12 @@ def main():
                     config.write_config()
                 if(op==2):
                     config.safegraphic=not(config.safegraphic)
+                    config.write_config()
+                if(op==3):
+                    if(config.debug>0):
+                        config.debug-=1
+                    else:
+                        config.debug=3
                     config.write_config()
         menu(op)
         key= ms.getch()

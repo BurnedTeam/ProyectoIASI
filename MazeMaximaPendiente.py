@@ -1,3 +1,4 @@
+import sys
 from estadoEscaladas import Estado
 import copy
 from colorama import Style, init, Fore
@@ -125,34 +126,48 @@ def expandir():
                 print("")        
                 return 0   
     
-def MaximaPendiente():
+def MaximaPendiente(debug):
     global exito
     global metax
     global metay
     global trama
     global nodos
+    global totalMonedas
     nodos=0
     exito=False
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(Fore.RED + logo + Fore.RESET)
-
-    game=input(Fore.MAGENTA+"Que laberinto deseas jugar: ")
-    n, laberinto = IASI.lectura_fichero("Laberintos/LABECOIN"+game+".txt")
-    global totalMonedas
-    totalMonedas=n
-    print(Fore.MAGENTA+"n:", n)
-    print("laberinto a resolver:")
-    IASI.printLaberinto(laberinto)
-    print("")
-    print("")
-
-    print(Fore.LIGHTBLUE_EX+Style.BRIGHT+"0:Debug Desactivado")
-    print(Style.NORMAL+"1:Debug Basico")
-    print("2:Debug Avanzado")
-    trama = int(input(Fore.CYAN+Style.BRIGHT+"Indica el nivel de la trama: "))
+    
+    key='a'
+    while((key != b'\r') and key != b'\x1b'):
+        while ms.kbhit():
+            ms.getch()
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(Fore.RED + logo + Fore.RESET)
+        game=input(Fore.MAGENTA+"Que laberinto deseas jugar: ")
+        os.system('cls' if os.name == 'nt' else 'clear')
+        n, laberinto = IASI.lectura_fichero("Laberintos/LABECOIN"+game+".txt")   
+        totalMonedas=n
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("Monedas necesarias: "+Fore.YELLOW+ str(n)+ Fore.RESET)
+        print(Fore.GREEN+"Laberinto a resolver:")
+        IASI.printLaberinto(laberinto)
+        print("")
+        print(Fore.LIGHTBLUE_EX+Style.BRIGHT+"Pulse:    Enter para resolver")
+        print(Style.NORMAL+Fore.BLUE+"          Cualquier otro botón para seleccionar otro laberinto")
+        print(Style.NORMAL+Fore.BLUE+"          ESC Para cerrar la aplicación"+ Fore.RESET)
+        key= ms.getch()
+    if(key == b'\x1b'):
+        sys.exit()
+    #"0:Debug Desactivado"
+    #"1:Debug Basico"
+    if(debug>1):
+        trama = 2
+    elif(debug==1):
+        trama = 1
+    else:
+        trama=0
+        
+        
     print(Style.NORMAL+"")
-    print("")
-    os.system('cls' if os.name == 'nt' else 'clear')
     inicio_tiempo = time.time()
 
     metax, metay = IASI.localizarmeta(laberinto)

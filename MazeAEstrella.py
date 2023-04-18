@@ -7,9 +7,10 @@ import time
 import msvcrt as ms
 import os 
 import queue
+import sys
 
 
-logom="""""
+logom="""
 
  █████╗           
 ██╔══██╗   ▀▄ ██ ▄▀
@@ -123,7 +124,6 @@ def expandir():
                         if(trama==3):
                             print(Fore.BLUE+"Nuevo estado agregado con el siguiente laberinto")   
                             IASI.printLaberinto(hijo.tablero)
-                            time.sleep(0.5)
 
                 abiertos = sorted(abiertos, key=lambda Estado: Estado.heuristica)
 
@@ -131,10 +131,10 @@ def expandir():
             print(Fore.RED+"Bucle abierto otra iteraccion")
     if(trama==1 or trama==2 or trama==3):
         print(Fore.RED+"Final Expandir")    
-    print(Fore.RED+"ESTE LABERINTO NO TIENE SOLUCION POSIBLE")
+    print(Fore.RED+"_________________________________________________________________\n\n\nESTE LABERINTO NO TIENE SOLUCION POSIBLE")
     resuelto=False
     
-def AEstrella():
+def AEstrella(debug):
     global trama
     global metax
     global metay
@@ -142,29 +142,33 @@ def AEstrella():
     global resuelto
     global nodos
     global resuelto
-    nodos=0
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(Fore.RED + logom + Fore.RESET)
-    
-
-    game=input(Fore.MAGENTA+"Que laberinto deseas jugar: ")
-    n, laberinto = IASI.lectura_fichero("Laberintos/LABECOIN"+game+".txt")    
     global totalMonedas
-    totalMonedas=n
-    print("n:", n)
-    print("laberinto a resolver:")
-    IASI.printLaberinto(laberinto)
-    print("")
-    print("")
-
+    nodos=0
+    trama=debug
     
-    print(Fore.LIGHTBLUE_EX+Style.BRIGHT+"0:Debug Desactivado")
-    print(Style.NORMAL+"1:Debug Basico")
-    print("2:Debug Avanzado")
-    print("3:Debug Todo")
 
-
-    trama = int(input(Fore.CYAN+Style.BRIGHT+"Indica el nivel de la trama: "))
+    key='a'
+    while((key != b'\r') and key != b'\x1b'):
+        while ms.kbhit():
+            ms.getch()
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(Fore.RED + logom + Fore.RESET)
+        game=input(Fore.MAGENTA+"Que laberinto deseas jugar: ")
+        os.system('cls' if os.name == 'nt' else 'clear')
+        n, laberinto = IASI.lectura_fichero("Laberintos/LABECOIN"+game+".txt")   
+        totalMonedas=n
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("Monedas necesarias: "+Fore.YELLOW+ str(n)+ Fore.RESET)
+        print(Fore.GREEN+"Laberinto a resolver:")
+        IASI.printLaberinto(laberinto)
+        print("")
+        print(Fore.LIGHTBLUE_EX+Style.BRIGHT+"Pulse:    Enter para resolver")
+        print(Style.NORMAL+Fore.BLUE+"          Cualquier otro botón para seleccionar otro laberinto")
+        print(Style.NORMAL+Fore.BLUE+"          ESC Para cerrar la aplicación"+ Fore.RESET)
+        key= ms.getch()
+    if(key == b'\x1b'):
+        sys.exit()
+    
     print(Style.NORMAL+"")
     inicio_tiempo = time.time()
     os.system('cls' if os.name == 'nt' else 'clear')

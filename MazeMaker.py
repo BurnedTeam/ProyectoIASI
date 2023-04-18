@@ -34,7 +34,7 @@ instrucciones="""
   
   Pulse ESC Para salir
         ENTER para guardar
-                                                               Proyecto realizado por Pablo Natera Muñoz      
+                                                              Proyecto realizado por: Pablo Natera Muñoz
                                                                                       Alejandro Barrena Millán
                                                                                       Raúl Martín-Romo Sánchez
 """
@@ -49,7 +49,7 @@ instruccionesSafe="""
   
   Pulse ESC Para salir
         ENTER para guardar
-                                                               Proyecto realizado por Pablo Natera Muñoz      
+                                                              Proyecto realizado por: Pablo Natera Muñoz      
                                                                                       Alejandro Barrena Millán
                                                                                       Raúl Martín-Romo Sánchez
 """

@@ -3,10 +3,10 @@
 import os
 
 # Nombres de las variables globales
-_global_vars = ['modo', 'safegraphic']
+_global_vars = ['modo', 'safegraphic', 'debug']
 
 # Valores por defecto de las variables
-_default_vals = {'modo': 0, 'safegraphic': 0}
+_default_vals = {'modo': 0, 'safegraphic': 0, 'debug': 0}
 
 # Ruta del archivo de configuración
 _config_file = 'config.txt'

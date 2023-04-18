@@ -27,7 +27,7 @@ downrrow="""
 def pintar_estado(laberinto, x, y, n):
     os.system('cls' if os.name == 'nt' else 'clear')
     
-    print(Fore.CYAN+"Monedas minimas = "+n+"\n")
+    print(Fore.CYAN+"Monedas minimas = "+n)
     
     if config.safegraphic:
         # Iterar por las filas del laberinto

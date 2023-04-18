@@ -24,13 +24,13 @@ downrrow="""
         ╚═╝
 """     
 instrucciones="""
-           W
-  Pulse A  S  D  para moverse por el laberinto
-  0     = Borrar 
+           """+Fore.CYAN+"""W"""+Fore.RESET+"""
+  Pulse"""+Fore.CYAN+""" A  S  D"""+Fore.RESET+"""  para moverse por el laberinto"""+Fore.GREEN+"""
+  0     = """+Fore.RED+"""Borrar"""+Fore.GREEN+""" 
   1-6   = 💲
   7     = 🚩
   8     = 🤖
-  9     = 🟫
+  9     = 🟫"""+Fore.RESET+"""
   
   Pulse ESC Para salir
         ENTER para guardar
@@ -39,13 +39,13 @@ instrucciones="""
                                                                                       Raúl Martín-Romo Sánchez
 """
 instruccionesSafe="""
-           W
-  Pulse A  S  D  para moverse por el laberinto
-  0     = Borrar 
+           """+Fore.CYAN+"""W"""+Fore.RESET+"""
+  Pulse"""+Fore.CYAN+""" A  S  D"""+Fore.RESET+"""  para moverse por el laberinto"""+Fore.GREEN+"""
+  0     = """+Fore.RED+"""Borrar"""+Fore.GREEN+""" 
   1-6   = Moneda
-  7     = Meta
-  8     = Robot
-  9     = Muro
+  7     = """+Fore.YELLOW+"""Meta"""+Fore.GREEN+"""
+  8     = """+Fore.BLUE+"""Robot"""+Fore.GREEN+"""
+  9     = """+Fore.RED+"""██ Muro"""+Fore.RESET+"""
   
   Pulse ESC Para salir
         ENTER para guardar
@@ -60,9 +60,9 @@ def pintar_estado(laberinto, x, y, n):
     print(Fore.CYAN+"Monedas minimas = "+n)
     moned=int(n)-IASI.sumamonedas(laberinto)
     if moned>0:
-        print("Te faltan "+Fore.RED+str(moned)+" monedas para que se pueda resolver")
+        print("Te faltan "+Fore.RED+str(moned)+Fore.CYAN+" monedas para que se pueda resolver")
     else:
-        print("Hay "+Fore.YELLOW+str(-moned)+" monedas de sobra para el robot")
+        print("Hay "+Fore.YELLOW+str(-moned)+Fore.CYAN+" monedas de sobra para el robot")
     
     if config.safegraphic:
         # Iterar por las filas del laberinto

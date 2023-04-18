@@ -1,11 +1,14 @@
 from colorama import Style, init, Fore
 import os
+try:
+    import msvcrt as ms
+except ImportError:
+    import getch as ms
 import MazeEscaladaSimple as MES
 import MazeAEstrella as AE
 import MazeMaximaPendiente as MP
 import MazeMaker as MM
 import MazePlayer as MPy
-import msvcrt as ms
 import config
 
 
@@ -94,25 +97,27 @@ def launchPy():
         MM.MazeMaker()
 
 def main():
-    
     config.read_config()
     op=0
     key='a'
     menu(op)
-    while((key != b'\r' or op!=0) and key != b'\x1b'):
-        if(key==b'\xe0'or key==b'\x00'):
+    
+    while((key != b'\r' or op!=0) and key != b'\x1b' and key!='\n' ):
+        if(key==b'\xe0'or key==b'\x00' or key=='\033'):
             key= ms.getch()
-            if(key==b'P'):
+            if(key=='['):
+                key=ms.getch()
+            if(key==b'P' or key=='B'):
                 if(op<3):
                     op+=1
                 else:
                     op=0
-            if(key==b'H'):
+            if(key==b'H' or key=='A'):
                 if(op>0):
                     op-=1
                 else:
                     op=3
-            if(key==b'M'):
+            if(key==b'M' or key=='C'):
                 if(op==1):
                     if(config.modo<4):
                         config.modo+=1
@@ -128,7 +133,7 @@ def main():
                     else:
                         config.debug=0
                     config.write_config()
-            if(key==b'K'):
+            if(key==b'K' or key=='D'):
                 if(op==1):
                     if(config.modo>0):
                         config.modo-=1
@@ -146,7 +151,8 @@ def main():
                     config.write_config()
         menu(op)
         key= ms.getch()
-    if(key == b'\r'):
+        
+    if(key == b'\r' or key=='\n'):
         launchPy()
         
     

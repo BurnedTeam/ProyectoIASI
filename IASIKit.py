@@ -1,9 +1,16 @@
+
+import sys
 from colorama import Style, init, Fore
 import config
 import time
 import os 
+if os.name == 'nt':
+    import msvcrt
 
-
+else:
+    import select
+    import termios
+    import sys
 
 def printLaberinto(laberinto):
     
@@ -136,3 +143,25 @@ def sumamonedas(tablero):
             if valor >= 1 and valor <= 6:
                 suma += valor
     return suma
+
+
+def kbhit():
+    ''' Devuelve true si esl buffer tiene algo, funciona tanto en windows como linux
+    '''
+    if os.name == 'nt':
+        return msvcrt.kbhit()
+
+    else:
+        dr,dw,de = select.select([sys.stdin], [], [], 0)
+        return dr != []
+
+def flushInputs():
+
+    if os.name == 'nt':
+        while(kbhit):
+            getch()
+
+    else:
+        # Vacía el buffer de entrada de sys.stdin
+        termios.tcflush(sys.stdin, termios.TCIFLUSH)
+

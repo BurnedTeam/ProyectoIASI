@@ -1,4 +1,7 @@
-import msvcrt as ms
+try:
+    import msvcrt as ms
+except ImportError:
+    import getch as ms
 import os
 import config
 from colorama import Style, init, Fore
@@ -127,19 +130,19 @@ def crear(laberinto, n):
         key = ms.getch()
 
         # Si el usuario presiona "esc", salir del bucle
-        if key == b'\x1b' or key == b'\r':
+        if key == b'\x1b' or key == b'\r' or key=='\n' or key=='\x1b':
             break
 
         # Si el usuario ingresa una tecla de movimiento
-        elif key in [b'w', b'a', b's', b'd']:
+        elif key in [b'w', b'a', b's', b'd', 'a','w','s','d']:
             # Actualizar la posición del usuario según la tecla presionada
-            if key == b'w' and x > 0:
+            if (key == b'w' or key == 'w' ) and x > 0:
                 x -= 1
-            elif key == b'a' and y > 0:
+            elif (key == b'a' or key == 'a' ) and y > 0:
                 y -= 1
-            elif key == b's' and x < filas - 1:
+            elif (key == b's' or key == 's' ) and x < filas - 1:
                 x += 1
-            elif key == b'd' and y < columnas - 1:
+            elif (key == b'd' or key == 'd' ) and y < columnas - 1:
                 y += 1
 
         # Si el usuario ingresa un número del 0 al 9
@@ -149,7 +152,7 @@ def crear(laberinto, n):
 
             # Actualizar el valor de la casilla actual con el número ingresado
             laberinto[x][y] = numero
-    if key == b'\r':
+    if key == b'\r' or key=='\n':
         return(True)
     else:
         return(False)
@@ -318,22 +321,24 @@ def MazeMaker():
     op=0
     key='a'
     menu(op)
-    while((key != b'\r') and key != b'\x1b'):
-        if(key==b'\xe0'or key==b'\x00'):
+    while((key != b'\r') and key != b'\x1b' and key !='\n'):
+        if(key==b'\xe0'or key==b'\x00' or key=='\033'):
             key= ms.getch()
-            if(key==b'P'):
+            if(key=='['):
+                key=ms.getch()
+            if(key==b'P' or key=='B'):
                 if(op<3):
                     op+=1
                 else:
                     op=0
-            if(key==b'H'):
+            if(key==b'H' or key=='A'):
                 if(op>0):
                     op-=1
                 else:
                     op=3
         menu(op)
         key= ms.getch()
-    if(key == b'\r'):
+    if(key == b'\r' or key=='\n'):
         os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + logoM + Fore.YELLOW)
         if op == 1:

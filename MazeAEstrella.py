@@ -4,7 +4,12 @@ import IASIKit as IASI
 
 import copy
 import time
-import msvcrt as ms
+try:
+    import msvcrt as ms
+except ImportError:
+    import getch as ms
+
+
 import os 
 import queue
 import sys
@@ -148,11 +153,11 @@ def AEstrella(debug):
     
 
     key='a'
-    while((key != b'\r') and key != b'\x1b'):
-        while ms.kbhit():
-            ms.getch()
+    while((key != b'\r') and key != b'\x1b' and key !='\n'):
+        
         os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + logom + Fore.RESET)
+        IASI.flushInputs()
         game=input(Fore.MAGENTA+"Que laberinto deseas jugar: ")
         os.system('cls' if os.name == 'nt' else 'clear')
         n, laberinto = IASI.lectura_fichero("Laberintos/LABECOIN"+game+".txt")   
@@ -195,7 +200,7 @@ def AEstrella(debug):
         if(resuelto):
             print(Fore.YELLOW+"¿Quieres una visualizacion grafica de la solucion? (S/N): ")
             key=ms.getch()
-            if key == b'S' or key== b's':
+            if key == b'S' or key== b's' or key == 'S' or key== 's':
                 IASI.mostrassoluciongraficaALT(solucion, movsR)
                 print("")
                 print("GoodGame wp")

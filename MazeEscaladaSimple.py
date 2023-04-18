@@ -9,8 +9,10 @@ import IASIKit as IASI
 import os 
 import copy
 import time
-import msvcrt as ms
-
+try:
+    import msvcrt as ms
+except ImportError:
+    import getch as ms
 
     
 #Posicion de la meta
@@ -138,9 +140,8 @@ def EscaladaSimple(debug):
     
     
     key='a'
-    while((key != b'\r') and key != b'\x1b'):
-        while ms.kbhit():
-            ms.getch()
+    while((key != b'\r') and key != b'\x1b' and key !='\n'):
+        IASI.flushInputs()
         os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + logo + Fore.RESET)
         game=input(Fore.MAGENTA+"Que laberinto deseas jugar: ")

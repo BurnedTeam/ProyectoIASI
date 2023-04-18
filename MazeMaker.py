@@ -23,11 +23,46 @@ downrrow="""
         ██╔═╝ 
         ╚═╝
 """     
+instrucciones="""
+           W
+  Pulse A  S  D  para moverse por el laberinto
+  0     = Borrar 
+  1-6   = 💲
+  7     = 🚩
+  8     = 🤖
+  9     = 🟫
+  
+  Pulse ESC Para salir
+        ENTER para guardar
+                                                               Proyecto realizado por Pablo Natera Muñoz      
+                                                                                      Alejandro Barrena Millán
+                                                                                      Raúl Martín-Romo Sánchez
+"""
+instruccionesSafe="""
+           W
+  Pulse A  S  D  para moverse por el laberinto
+  0     = Borrar 
+  1-6   = Moneda
+  7     = Meta
+  8     = Robot
+  9     = Muro
+  
+  Pulse ESC Para salir
+        ENTER para guardar
+                                                               Proyecto realizado por Pablo Natera Muñoz      
+                                                                                      Alejandro Barrena Millán
+                                                                                      Raúl Martín-Romo Sánchez
+"""
 
 def pintar_estado(laberinto, x, y, n):
     os.system('cls' if os.name == 'nt' else 'clear')
     
     print(Fore.CYAN+"Monedas minimas = "+n)
+    moned=int(n)-IASI.sumamonedas(laberinto)
+    if moned>0:
+        print("Te faltan "+Fore.RED+str(moned)+" monedas para que se pueda resolver")
+    else:
+        print("Hay "+Fore.YELLOW+str(-moned)+" monedas de sobra para el robot")
     
     if config.safegraphic:
         # Iterar por las filas del laberinto
@@ -50,6 +85,7 @@ def pintar_estado(laberinto, x, y, n):
                     print(Fore.RESET+str(valor)+" ",end="") 
             # Imprimir un salto de línea al final de cada fila
             print()
+        print(Fore.RESET+instruccionesSafe)
 
     
     else:
@@ -71,15 +107,9 @@ def pintar_estado(laberinto, x, y, n):
                     print("🚩",end="") 
                 else :
                     print(" "+str(valor),end="") 
-            # Imprimir un salto de línea al final de cada fila
+        # Imprimir un salto de línea al final de cada fila
             print()
-    print(Fore.RESET+"\n           W")
-    print("  Pulse A  S  D  para moverse por el laberinto")
-    print(Fore.MAGENTA+"  Pulse un número del 1 al 6. Para accionar")
-    print("  Pulse ESC Para guardar"+Fore.RESET)
-    print("                                                               Proyecto realizado por Pablo Natera Muñoz")
-    print("                                                                                      Alejandro Barrena Millán")
-    print("                                                                                      Raúl Martín-Romo Sánchez")
+        print(Fore.RESET+instrucciones)
      
 def crear(laberinto, n):
     # Obtener el tamaño del laberinto
@@ -97,7 +127,7 @@ def crear(laberinto, n):
         key = ms.getch()
 
         # Si el usuario presiona "esc", salir del bucle
-        if key == b'\x1b':
+        if key == b'\x1b' or key == b'\r':
             break
 
         # Si el usuario ingresa una tecla de movimiento
@@ -119,9 +149,10 @@ def crear(laberinto, n):
 
             # Actualizar el valor de la casilla actual con el número ingresado
             laberinto[x][y] = numero
-
-    # Si se presiona "esc", salir de la función
-    return
+    if key == b'\r':
+        return(True)
+    else:
+        return(False)
 
 def guardarLab(laberinto, n):
     # Crear la carpeta Laberintos si no existe
@@ -279,7 +310,7 @@ def menu(op):
     print(Fore.RESET+"\n                      ⬆")
     print("             Pulse ⬅  ⬇ ➡  para moverse por el menú")
     print("             Pulse ENTER. Para accionar")
-    print("                                                               Proyecto realizado por       Pablo Natera Muñoz")
+    print("                                                               Proyecto realizado por:      Pablo Natera Muñoz")
     print("                                                                                      Alejandro Barrena Millán")
     print("                                                                                      Raúl Martín-Romo Sánchez")
 
@@ -316,11 +347,11 @@ def MazeMaker():
             espejo_matriz(n,n2)
         # Si el usuario presiona "3", generar un laberinto
         elif op == 0:
-            n=input("Elige el número de monedas minimas: ")
+            n=input("Elige el número de monedas minimas:  ")
             laberinto = [[9 if i == 0 or i == 9 or j == 0 or j == 9 else 0 for j in range(10)] for i in range(10)]
             print("Monedas minimas = "+ n+"\n")
-            crear(laberinto, n)
-            guardarLab(laberinto, n)
+            if(crear(laberinto, n)):
+                guardarLab(laberinto, n)
         # Si el usuario presiona otra tecla, volver al menú
         elif  op == 2:
             n=input("Elige laberinto de entrada ")

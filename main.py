@@ -25,7 +25,7 @@ def modoSel():
         elif config.modo == 1:
             return "Resolucion por Escalada Simple"
         elif config.modo == 2:
-            return "Resolucion por Maxima Pendiente*"
+            return "Resolucion por Maxima Pendiente"
         elif config.modo == 3:
             return "Jugar Laberintos"
         elif config.modo== 4:
@@ -40,26 +40,26 @@ def menu(op):
     if op==0:
         os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + logo + Fore.RESET)
-        print(Fore.CYAN+"-> "+Fore.YELLOW+"ENTRAR EN BURNED SOLVER")
+        print(Fore.CYAN+"-> "+Fore.YELLOW+"ENTRAR EN PROGRAMA")
         print(Fore.GREEN+"   Modo seleccionado: "+Fore.MAGENTA+modoSel())
         print(Fore.GREEN+"   Graficos: "+Fore.MAGENTA+graficos())
     elif op==1:
         os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + logo + Fore.RESET)
-        print(Fore.GREEN+"   ENTRAR EN BURNED SOLVER")
-        print(Fore.CYAN+"-> "+Fore.YELLOW+"Modo seleccionado: "+Fore.MAGENTA+modoSel())
+        print(Fore.GREEN+"   ENTRAR EN PROGRAMA")
+        print(Fore.CYAN+"-> "+Fore.YELLOW+"Modo seleccionado: "+Fore.CYAN+"<- "+Fore.MAGENTA+modoSel()+Fore.CYAN+" ->")
         print(Fore.GREEN+"   Graficos: "+Fore.MAGENTA+graficos())
     elif op==2:
         os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + logo + Fore.RESET)
-        print(Fore.GREEN+"   ENTRAR EN BURNED SOLVER")
+        print(Fore.GREEN+"   ENTRAR EN PROGRAMA")
         print(Fore.GREEN+"   Modo seleccionado: "+Fore.MAGENTA+modoSel())
-        print(Fore.CYAN+"-> "+Fore.YELLOW+"Graficos: "+Fore.MAGENTA+graficos())
+        print(Fore.CYAN+"-> "+Fore.YELLOW+"Graficos: "+Fore.CYAN+"<- "+Fore.MAGENTA+graficos()+Fore.CYAN+"->")
     
     print(Fore.RESET+"\n                      ⬆")
     print("             Pulse ⬅  ⬇ ➡  para moverse por el menú")
     print("             Pulse ENTER. Para accionar")
-    print("                                                               Proyecto realizado por       Pablo Natera Muñoz")
+    print("                                                               Proyecto realizado por:      Pablo Natera Muñoz")
     print("                                                                                      Alejandro Barrena Millán")
     print("                                                                                      Raúl Martín-Romo Sánchez")
     

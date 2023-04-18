@@ -288,7 +288,7 @@ def MazeMaker():
     key='a'
     menu(op)
     while((key != b'\r') and key != b'\x1b'):
-        if(key==b'\xe0'):
+        if(key==b'\xe0'or key==b'\x00'):
             key= ms.getch()
             if(key==b'P'):
                 if(op<3):

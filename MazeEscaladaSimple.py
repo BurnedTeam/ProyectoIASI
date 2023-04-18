@@ -9,9 +9,9 @@ import IASIKit as IASI
 import os 
 import copy
 import time
-try:
+if os.name == 'nt':
     import msvcrt as ms
-except ImportError:
+else:
     import getch as ms
 
     

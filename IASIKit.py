@@ -145,21 +145,11 @@ def sumamonedas(tablero):
     return suma
 
 
-def kbhit():
-    ''' Devuelve true si esl buffer tiene algo, funciona tanto en windows como linux
-    '''
-    if os.name == 'nt':
-        return msvcrt.kbhit()
-
-    else:
-        dr,dw,de = select.select([sys.stdin], [], [], 0)
-        return dr != []
-
 def flushInputs():
 
     if os.name == 'nt':
-        while(kbhit):
-            getch()
+        while(msvcrt.kbhit()):
+            msvcrt.getch()
 
     else:
         # Vacía el buffer de entrada de sys.stdin

@@ -43,11 +43,13 @@ def mover(laberinto, movimiento, puntos, win, i, j, lengLine, n):
         x = x - 1
     
     # Verificar si el nuevo movimiento es posible (no fuera de los límites del laberinto ni colisión con un obstáculo)
-    if 0 <= x < len(laberinto) and 0 <= y < lengLine and laberinto[x][y] != 9 and (laberinto[x][y]!=7 and puntos<n):
+    if 0 <= x < len(laberinto) and 0 <= y < lengLine and laberinto[x][y] != 9 and (laberinto[x][y]!=7 and puntos<n or puntos>=n ):
         # Actualizar la posición del robot en el laberinto
         if laberinto[x][y]==7:
             laberinto[i][j] = 0
-            i,j,lengLine=IASI.locateBot(laberinto)
+            i,j=IASI.locateBot(laberinto)
+            LengLine=len(laberinto)
+            
             if i==-1:
                 win=True
                 laberinto[x][y] = 8

@@ -1,8 +1,9 @@
-try:
-    import msvcrt as ms
-except ImportError:
-    import getch as ms
+
 import os
+if os.name == 'nt':
+    import msvcrt as ms
+else:
+    import getch as ms
 import config
 from colorama import Style, init, Fore
 import IASIKit as IASI

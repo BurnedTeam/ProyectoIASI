@@ -4,9 +4,9 @@ import copy
 from colorama import Style, init, Fore
 import os    
 import time
-try:
+if os.name == 'nt':
     import msvcrt as ms
-except ImportError:
+else:
     import getch as ms
 import IASIKit as IASI
 

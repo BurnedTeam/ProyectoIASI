@@ -1,8 +1,8 @@
 from colorama import Style, init, Fore
 import os
-try:
+if os.name == 'nt':
     import msvcrt as ms
-except ImportError:
+else:
     import getch as ms
 import MazeEscaladaSimple as MES
 import MazeAEstrella as AE

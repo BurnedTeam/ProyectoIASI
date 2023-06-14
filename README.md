@@ -53,6 +53,21 @@ AD, A, BI, BI, BI, B, B, B, BD, AI, A, AD, BD, D, BD, BD, B
 
 ↗ ⬆ ↙ ↙ ↙ ⬇ ⬇ ⬇ ↘ ↖ ⬆ ↗ ↘ ➡ ↘ ↘ ⬇
 ~~~    
+# Soluciones implementadas
+
+Hemos utilizado tres algoritmos heurísticos para resolver el problema del laberinto y encontrar un camino para salir:
+
+1. A*: Este algoritmo utiliza una función heurística para estimar el costo del camino desde el inicio hasta cada celda y selecciona la mejor opción en cada paso. Utiliza una combinación de la distancia euclidiana y el número de monedas recogidas como función heurística.
+
+2. Escalada simple: Este algoritmo comienza desde una posición inicial y selecciona el vecino con el menor costo heurístico en cada paso. Si no hay un vecino con menor costo, se detiene. Utiliza la distancia euclidiana como función heurística.
+
+3. Escalada máxima pendiente: Similar al algoritmo de escalada simple, pero en lugar de seleccionar el vecino con el menor costo heurístico, selecciona el vecino con el mayor aumento en el costo heurístico. Esto permite explorar caminos subóptimos en busca de mejores soluciones. Utiliza la distancia euclidiana como función heurística.
+
+Además de los algoritmos heurísticos, también hemos implementado un modelo de redes neuronales utilizando Keras como método no heurístico. Este modelo aprende a través de los datos de entrenamiento creados por el metodo A* y permite proporcionar una solución basada en patrones identificados en el algoritmo A*.
+
+En resumen, hemos utilizado A*, escalada simple y escalada máxima pendiente como soluciones heurísticas para encontrar un camino en el laberinto, considerando la acumulación de monedas requerida. También hemos explorado un enfoque no heurístico utilizando un modelo de redes neuronales implementado en Keras.
+
+¡Estas soluciones nos permiten resolver el problema del laberinto y encontrar un camino óptimo hacia la salida!
 
 ___
 ---
@@ -117,3 +132,20 @@ UR, U, DL, DL, DL, D, D, D, DR, UL, U, UR, DR, R, DR, DR, D
 
 ↗ ⬆ ↙ ↙ ↙ ⬇ ⬇ ⬇ ↘ ↖ ⬆ ↗ ↘ ➡ ↘ ↘ ⬇
 ~~~
+
+# Implemented Solutions
+
+We have used three heuristic algorithms to solve the maze problem and find a path to exit:
+
+1. A*: This algorithm uses a heuristic function to estimate the cost of the path from the start to each cell and selects the best option at each step. It uses a combination of the Euclidean distance and the number of collected coins as the heuristic function.
+
+2. Simple Hill Climbing: This algorithm starts from an initial position and selects the neighbor with the lowest heuristic cost at each step. If there is no neighbor with a lower cost, it stops. It uses the Euclidean distance as the heuristic function.
+
+3. Maximum Slope Ascent: Similar to the Simple Hill Climbing algorithm, but instead of selecting the neighbor with the lowest heuristic cost, it selects the neighbor with the highest increase in heuristic cost. This allows exploring suboptimal paths in search of better solutions. It uses the Euclidean distance as the heuristic function.
+
+In addition to the heuristic algorithms, we have also implemented a neural network model using Keras as a non-heuristic method. This model learns from the training data created by the A* algorithm and can provide a solution based on patterns identified in the A* algorithm.
+
+In summary, we have used A*, Simple Hill Climbing, and Maximum Slope Ascent as heuristic solutions to find a path in the maze, considering the required accumulation of coins. We have also explored a non-heuristic approach using a neural network model implemented in Keras.
+
+These solutions allow us to solve the maze problem and find an optimal path to the exit!
+
